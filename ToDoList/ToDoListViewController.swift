@@ -10,11 +10,10 @@ import CoreData
 
 class ToDoListViewController: UITableViewController {
     private var tasks: [Task] = []
-    
+    private let context = StorageManager.shared.persistentContainer.viewContext
     // MARK: - Override Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        let context = getContext()
         let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
         
         do {
@@ -22,11 +21,6 @@ class ToDoListViewController: UITableViewController {
         } catch let error as NSError {
             print(error.localizedDescription)
         }
-    }
-    
-    private func getContext() -> NSManagedObjectContext {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        return appDelegate.persistentContainer.viewContext
     }
     
     // MARK: - IB Actions
@@ -49,8 +43,6 @@ class ToDoListViewController: UITableViewController {
 extension ToDoListViewController {
     private func saveTask(with title: String) {
         
-        let context = getContext()
-        
         guard let entinty = NSEntityDescription.entity(forEntityName: "Task",
                                                        in: context) else { return }
         
@@ -66,7 +58,6 @@ extension ToDoListViewController {
     }
     
     private func deleteAllTasks() {
-        let context = self.getContext()
         let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
         if let tasks = try? context.fetch(fetchRequest) {
             for task in tasks {
@@ -125,7 +116,6 @@ extension ToDoListViewController {
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
     }
-    
 }
 
 // MARK: - Table view data source
